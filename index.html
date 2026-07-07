@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="login-view" id="loginView">
+      <div class="login-background"></div>
+      <div class="login-container">
+        <div class="login-card">
+          <div class="login-header">
+            <div class="brand-mark">IST</div>
+            <div>
+              <p class="eyebrow">Private Operations Portal</p>
+              <h1>Invoice Tracker</h1>
+            </div>
+          </div>
+          <p class="login-subtitle">Secure center-wise tracking for operational status and invoice signatures</p>
+          
+          <form class="login-form" id="loginForm">
+            <div class="form-group">
+              <label for="emailInput">
+                <span class="label-text">Email Address</span>
+                <div class="input-wrapper">
+                  <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                  <input id="emailInput" type="email" autocomplete="username" placeholder="your.email@example.com" required>
+                </div>
+              </label>
+            </div>
+            
+            <div class="form-group">
+              <label for="passwordInput">
+                <span class="label-text">Password</span>
+                <div class="input-wrapper">
+                  <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <input id="passwordInput" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+                </div>
+              </label>
+            </div>
+            
+            <button type="submit" class="submit-button">Sign in</button>
+            <p class="form-message" id="loginMessage" role="alert"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace hidden" id="workspaceView">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="scopeLabel">Dashboard</p>
+          <h1 id="dashboardTitle">Invoice Signature Status</h1>
+        </div>
+        <div class="topbar-actions">
+          <div class="user-chip">
+            <span id="userName">Admin</span>
+            <small id="userRole">Role</small>
+          </div>
+          <button class="ghost-button" id="logoutButton" type="button">Logout</button>
+        </div>
+      </header>
+
+      <section class="kpi-grid" id="kpiGrid" aria-label="Dashboard metrics"></section>
+
+      <section class="control-strip">
+        <label>
+          <span>Lab</span>
+          <select id="labFilter"></select>
+        </label>
+        <label>
+          <span>District</span>
+          <select id="districtFilter"></select>
+        </label>
+        <label>
+          <span>Status</span>
+          <select id="statusFilter">
+            <option value="all">All statuses</option>
+            <option value="not-started">Not started</option>
+            <option value="inactive">Inactive</option>
+            <option value="active">Active</option>
+            <option value="complete">Completed</option>
+            <option value="pending">Pending signature</option>
+          </select>
+        </label>
+        <label class="combo-label">
+          <span>Center</span>
+          <div class="combo" id="centerCombobox">
+            <input id="centerSearchInput" type="search" autocomplete="off" placeholder="Search or select center">
+            <div class="combo-menu hidden" id="centerMenu" role="listbox" aria-label="Center options"></div>
+          </div>
+        </label>
+        <label>
+          <span>Invoice Month</span>
+          <input id="invoiceMonthInput" type="month">
+        </label>
+        <button class="export-button" id="exportButton" type="button" title="Export all data to Excel">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Export to Excel
+        </button>
+      </section>
+
+      <section class="dashboard-layout">
+        <aside class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Centers</p>
+              <h2 id="centerCount">0 visible</h2>
+            </div>
+          </div>
+          <div class="center-list" id="centerList"></div>
+        </aside>
+
+        <section class="panel tracker-panel" id="trackerPanel">
+          <div class="empty-state" id="emptyState">
+            <h2>Select a center</h2>
+            <p>Choose a center from the list to update operational status and invoice signature stages.</p>
+          </div>
+
+          <div class="tracker-detail hidden" id="trackerDetail">
+            <div class="detail-header">
+              <div>
+                <p class="eyebrow" id="detailMeta">Lab / District</p>
+                <h2 id="detailTitle">Center</h2>
+              </div>
+              <span class="status-badge" id="detailBadge">Not started</span>
+            </div>
+
+            <div class="stage-card">
+              <div class="stage-copy">
+                <h3>Center operational status</h3>
+                <p>Mark inactive and submit immediately, or mark active to begin signature tracking.</p>
+              </div>
+              <div class="segmented" role="group" aria-label="Operational status">
+                <button type="button" data-operational="active">Active</button>
+                <button type="button" data-operational="inactive">Inactive</button>
+              </div>
+            </div>
+
+            <div class="stage-flow" id="stageFlow"></div>
+
+            <label class="remarks-box">
+              <span>Remarks</span>
+              <textarea id="remarksInput" rows="4" placeholder="Add notes for this center"></textarea>
+            </label>
+
+            <div class="detail-actions">
+              <button class="ghost-button" id="resetCenterButton" type="button">Reset center</button>
+              <button id="saveButton" type="button">Submit update</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Progress</p>
+              <h2>Signature pipeline</h2>
+            </div>
+          </div>
+          <div class="pipeline" id="pipelineChart"></div>
+          <div class="activity-box">
+            <p class="eyebrow">Recent updates</p>
+            <div id="activityList" class="activity-list"></div>
+          </div>
+        </aside>
+      </section>
+    </section>
+
+    <div class="modal-overlay hidden" id="kpiModalOverlay">
+      <div class="modal" id="kpiModalContent"></div>
+    </div>
+
+    <div class="success-notification hidden" id="successNotification"></div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+  <script src="app-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
